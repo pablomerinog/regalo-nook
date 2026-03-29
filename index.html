@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nook's Birthday Package</title>
+    <style>
+        :root {
+            --ac-bg: #f8f5e4;
+            --ac-green: #78bc61;
+            --ac-brown: #8b5a2b;
+            --ac-text: #4b4b4b;
+            --ac-yellow: #ffcc00;
+            --sky-blue: #0c1445;
+        }
+
+        body {
+            background-color: var(--ac-bg);
+            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background-image: radial-gradient(#e1dec9 2px, transparent 2px);
+            background-size: 30px 30px;
+            transition: background-color 1s ease;
+        }
+
+        /* Efecto Cielo Nocturno Día 4 */
+        .night-sky {
+            background-color: var(--sky-blue) !important;
+            background-image: radial-gradient(white 1px, transparent 1px) !important;
+            background-size: 50px 50px !important;
+        }
+
+        #stats-bar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 3px solid var(--ac-brown);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+
+        #character-area {
+            position: absolute;
+            bottom: 180px;
+            text-align: center;
+        }
+
+        #avatar {
+            width: 450px;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
+        }
+
+        .dialog-box {
+            position: absolute;
+            bottom: 40px;
+            width: 85%;
+            max-width: 650px;
+            background: white;
+            border: 5px solid var(--ac-brown);
+            border-radius: 45px;
+            padding: 30px;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.1);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .char-name {
+            position: absolute;
+            top: -25px;
+            left: 50px;
+            background: var(--ac-yellow);
+            color: white;
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            border: 4px solid var(--ac-brown);
+            font-size: 1.2rem;
+        }
+
+        #text-content {
+            font-size: 1.3rem;
+            color: var(--ac-text);
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        #options-container {
+            position: absolute;
+            right: 0px;
+            top: -150px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            width: 300px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid var(--ac-green);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-family: inherit;
+            font-weight: bold;
+            color: var(--ac-text);
+            cursor: pointer;
+            box-shadow: 5px 5px 0px var(--ac-green);
+            transition: 0.2s;
+        }
+
+        .option-btn:hover { transform: scale(1.05); background: #f0fff0; }
+
+        #minigame-container {
+            display: none;
+            position: absolute;
+            top: 5%;
+            background: white;
+            padding: 20px;
+            border-radius: 30px;
+            border: 5px solid var(--ac-green);
+            text-align: center;
+            z-index: 20;
+            width: 380px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+
+        .museum-img { width: 180px; border: 3px solid var(--ac-brown); margin: 10px 0; border-radius: 10px; }
+        
+        input[type="text"], input[type="number"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 20px;
+            border: 2px solid var(--ac-brown);
+            margin: 10px 0;
+            font-family: inherit;
+            text-align: center;
+        }
+
+        /* --- NUEVO ESTILO CONSTELACIONES --- */
+        .constellation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .constellation-card {
+            background: #1a2a6c;
+            border: 3px solid var(--ac-yellow);
+            border-radius: 15px;
+            padding: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .constellation-card:hover { transform: scale(1.05); background: #2a4a8c; }
+        .constellation-card img { width: 80px; height: 80px; filter: brightness(1.5); }
+
+        #star-counter { font-size: 2rem; color: var(--ac-yellow); font-weight: bold; margin: 10px; }
+
+        .shop-box {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px dashed var(--ac-green);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #cooldown-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #2c3e50;
+            color: white;
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .next-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 35px;
+            color: var(--ac-green);
+            font-size: 1.5rem;
+            animation: bounce 1s infinite;
+            display: none;
+        }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
+    </style>
+</head>
+<body id="main-body">
+
+<div id="stats-bar">
+    <span>💰 <span id="baya-count">3000</span></span>
+    <span>❤️ <span id="vida-count">2</span></span>
+</div>
+
+<div id="cooldown-screen">
+    <h1>⚠️ ISLA EN MANTENIMIENTO ⚠️</h1>
+    <p>Seguridad de la isla: Has fallado demasiadas veces.</p>
+    <h2 id="timer-display">--:--</h2>
+    <p>Vuelve cuando termine el cronómetro.</p>
+</div>
+
+<div id="character-area">
+    <img id="avatar" src="tom.png" alt="Personaje">
+</div>
+
+<div id="minigame-container">
+    <h3 id="game-title" style="color: var(--ac-brown); margin:0;">RETO</h3>
+    <div id="star-counter" style="display:none;">0 / 10</div>
+    <div id="game-content"></div>
+    <div id="game-controls"></div>
+    <div class="shop-box">
+        <button class="option-btn" style="font-size: 0.7rem;" id="btn-pista" onclick="buyHelp('pista')">Pista (500B)</button>
+        <button class="option-btn" style="font-size: 0.7rem;" id="btn-skip" onclick="buyHelp('skip')">Comprar Solución (2500B)</button>
+    </div>
+</div>
+
+<div class="dialog-box" onclick="handleBoxClick()">
+    <div class="char-name" id="char-name">Cargando...</div>
+    <div id="text-content">Iniciando Nookófono...</div>
+    <div id="options-container"></div>
+    <div class="next-btn" id="next-icon">▼</div>
+</div>
+
+<script>
+    const hoy = new Date();
+    const dia = hoy.getDate();
+    const mes = hoy.getMonth() + 1;
+
+    let dialogs = [];
+    let currentStep = 0;
+    let isTyping = false;
+    let showingOptions = false;
+    let isShowingReply = false;
+    let pistaUsada = false;
+    
+    let bayas = parseInt(localStorage.getItem('bayas')) || 3000;
+    let vidas = 2;
+    const COOLDOWN_MS = 30 * 60 * 1000;
+
+    function updateStats() {
+        document.getElementById('baya-count').innerText = bayas;
+        document.getElementById('vida-count').innerText = vidas;
+        localStorage.setItem('bayas', bayas);
+    }
+
+    // --- LÓGICA DE DÍAS ---
+    if (mes === 3 && dia >= 31) { 
+        dialogs = [
+            { name: "Tom Nook", img: "tom.png", text: "¡Hola, hola! Qué alegría verte por aquí, sí, sí. Bienvenido a este proyecto tan especial." },
+            { name: "Tom Nook", img: "tom.png", text: "Me temo que el hidroavión de Dodo Airlines tuvo un pequeño percance con las cajas de tu regalo..." },
+            { name: "Tom Nook", img: "tom.png", text: "Rafa se distrajo mirando una mariposa y ¡puf! Las cajas cayeron por toda la isla." },
+            { name: "Tom Nook", img: "tom.png", text: "He asignado un presupuesto de 3.000 bayas para tus gastos. ¡Úsalas con cabeza, sí, sí!" },
+            { name: "Tom Nook", img: "tom.png", text: "A partir de mañana, Canela te dará los detalles en el informativo. ¡Descansa hoy!" }
+        ];
+    } 
+    else if (mes === 4 && dia === 1) {
+        if (localStorage.getItem('dia1_done')) {
+            dialogs = [{ name: "Canela", img: "canela.png", text: "¡Ya recuperaste la llave! Mañana Sócrates tendrá más noticias." }];
+        } else {
+            dialogs = [
+                { name: "Canela", img: "canela.png", text: "¡Buenos días! Soy Canela. Un pez gigante tiene la llave del almacén..." },
+                { name: "Canela", img: "canela.png", text: "Recuerda que tienes 2 intentos antes de que el sistema se bloquee.",
+                  options: [{ text: "¡Empezar reto!", action: "launchDay1" }] }
+            ];
+        }
+    } 
+    else if (mes === 4 && dia === 2) {
+        if (localStorage.getItem('dia2_done')) {
+            dialogs = [{ name: "Sócrates", img: "socrates.png", text: "¡Uuuh! Ya identificamos el cuadro hoy. ¡Vuelve mañana!" }];
+        } else {
+            dialogs = [
+                { name: "Sócrates", img: "socrates.png", text: "¡Uuuh! He encontrado una caja de regalo enterrada." },
+                { name: "Sócrates", img: "socrates.png", text: "¿Podrías identificar esta famosa obra de arte?", 
+                  options: [{ text: "¡Identificar cuadro!", action: "launchDay2" }] }
+            ];
+        }
+    } 
+    else if (mes === 4 && dia === 3) {
+        if (localStorage.getItem('dia3_done')) {
+            dialogs = [{ name: "Tendo", img: "tendo.png", text: "¡Gracias por las cuentas! ...cuentas!" }];
+        } else {
+            dialogs = [
+                { name: "Tendo", img: "tendo.png", text: "¡Hola, hola! La caja registradora se ha roto... ¡roto!" },
+                { name: "Nendo", img: "nendo.png", text: "Ayúdanos a calcular las ventas para recuperar tu paquete... ¡paquete!",
+                  options: [{ text: "¡Hacer cuentas!", action: "launchDay3" }] }
+            ];
+        }
+    } 
+    else if (mes === 4 && dia === 4) {
+        if (localStorage.getItem('dia4_done')) {
+            dialogs = [{ name: "Estela", img: "estela.png", text: "¡Esa constelación es preciosa! Gracias por ayudarme." }];
+        } else {
+            dialogs = [
+                { name: "Estela", img: "estela.png", text: "¡Uuuuh! ¡Mira qué cielo tan despejado!" },
+                { name: "Estela", img: "estela.png", text: "Estoy intentando registrar una constelación en mi diario que tiene forma de **Cangrejo (Cáncer)**." },
+                { name: "Estela", img: "estela.png", text: "¿Podrías señalarla en el firmamento para que pueda dibujarla?",
+                  options: [{ text: "¡Buscar en el cielo!", action: "launchDay4" }] }
+            ];
+        }
+    }
+    else if (mes === 4 && dia === 5) { // DÍA 5 - 30 de Marzo
+        if (localStorage.getItem('dia5_done')) {
+            dialogs = [{ name: "Gulliver", img: "gulliver.png", text: "¡Gracias por refrescarme la memoria, marinero! Ya recuerdo dónde puse mi brújula." }];
+        } else {
+            dialogs = [
+                { name: "Gulliver", img: "gulliver.png", text: "¡Zzz... mar... tormenta... ¡Ah! ¿Quién eres tú? ¿Dónde estoy?" },
+                { name: "Gulliver", img: "gulliver.png", text: "He debido de darme un buen golpe, porque no recuerdo qué objetos traía en mi equipaje de regalo." },
+                { name: "Gulliver", img: "gulliver.png", text: "Si me ayudas a emparejar estos objetos, mi memoria volverá a ser la de un capitán. ¿Probamos?",
+                  options: [{ text: "¡Ayudar a Gulliver!", action: "launchDay5" }] }
+            ];
+        }
+    }
+    else {
+        dialogs = [{ name: "Tom Nook", img: "tom.png", text: "Paciencia, sí, sí. Vuelve el 1 de abril." }];
+    }
+
+    const textElement = document.getElementById('text-content');
+    const nameElement = document.getElementById('char-name');
+    const avatarElement = document.getElementById('avatar');
+    const optionsContainer = document.getElementById('options-container');
+    const nextIcon = document.getElementById('next-icon');
+    const minigameBox = document.getElementById('minigame-container');
+
+    function typeWriter(text, callback) {
+        isTyping = true;
+        nextIcon.style.display = "none";
+        let i = 0;
+        textElement.innerHTML = "";
+        const timer = setInterval(() => {
+            textElement.innerHTML += text.charAt(i);
+            i++;
+            if (i >= text.length) {
+                clearInterval(timer);
+                isTyping = false;
+                if (callback) callback();
+                else nextIcon.style.display = "block";
+            }
+        }, 30);
+    }
+
+    function handleBoxClick() {
+        if (isTyping || showingOptions || checkCooldown()) return;
+        if (isShowingReply) { isShowingReply = false; nextMessage(); return; }
+        nextMessage();
+    }
+
+    function nextMessage() {
+        if (currentStep < dialogs.length) {
+            const d = dialogs[currentStep];
+            nameElement.innerText = d.name;
+            avatarElement.src = d.img;
+            if (d.options) typeWriter(d.text, () => showOptions(d.options));
+            else typeWriter(d.text);
+            currentStep++;
+        }
+    }
+
+    function showOptions(options) {
+        showingOptions = true;
+        optionsContainer.innerHTML = "";
+        optionsContainer.style.display = "flex";
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "option-btn";
+            btn.innerText = opt.text;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                showingOptions = false;
+                optionsContainer.style.display = "none";
+                if(opt.action === "launchDay1") launchDay1();
+                else if(opt.action === "launchDay2") launchDay2();
+                else if(opt.action === "launchDay3") launchDay3();
+                else if(opt.action === "launchDay4") launchDay4();
+                else { isShowingReply = true; typeWriter(opt.reply); }
+            };
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    // --- MINIJUEGOS ---
+    function launchDay1() {
+        minigameBox.style.display = "block";
+        document.getElementById('game-title').innerText = "RETO DE CANELA";
+        document.getElementById('game-content').innerHTML = `<img src="celacanto.png" class="shadow-img">`;
+        const ctrls = document.getElementById('game-controls');
+        ctrls.innerHTML = "";
+        ["Celacanto", "Pez Sol", "Atún", "Tiburón Ballena"].forEach(e => {
+            const b = document.createElement('button');
+            b.className = "option-btn"; b.innerText = e; b.style.display = "block"; b.style.width = "100%"; b.style.marginBottom = "5px";
+            b.onclick = () => e === "Celacanto" ? winDay(1) : failAttempt();
+            ctrls.appendChild(b);
+        });
+    }
+
+    function launchDay2() {
+        minigameBox.style.display = "block";
+        document.getElementById('game-title').innerText = "SÓCRATES: ARTE";
+        document.getElementById('game-content').innerHTML = `
+            <img src="cuadro_joven.png" class="museum-img">
+            <input type="text" id="museum-input" placeholder="Nombre del cuadro...">`;
+        document.getElementById('game-controls').innerHTML = `<button class="option-btn" style="width:100%" onclick="checkM()">Entregar</button>`;
+    }
+
+    function checkM() {
+        const a = document.getElementById('museum-input').value.toLowerCase();
+        (a.includes("perla") || a.includes("joven")) ? winDay(2) : failAttempt();
+    }
+
+    function launchDay3() {
+        minigameBox.style.display = "block";
+        document.getElementById('game-title').innerText = "CUENTAS NOOK";
+        document.getElementById('game-content').innerHTML = `
+            <div style="font-size:0.8rem; text-align:left; border:1px solid #ccc; padding:10px;">
+                2x Pepitas Oro <br>1x Mariposa Tigre <br>3x Manzanas
+            </div><input type="number" id="nook-input" placeholder="Total...">`;
+        document.getElementById('game-controls').innerHTML = `<button class="option-btn" style="width:100%" onclick="checkN()">Cerrar Caja</button>`;
+    }
+
+    function checkN() {
+        parseInt(document.getElementById('nook-input').value) === 20540 ? winDay(3) : failAttempt();
+    }
+
+    /* --- MINIJUEGO DÍA 4: MAPA ESTELAR --- */
+    function launchDay4() {
+        document.getElementById('main-body').classList.add('night-sky');
+        minigameBox.style.display = "block";
+        document.getElementById('game-title').innerText = "EL MAPA ESTELAR";
+        document.getElementById('game-content').innerHTML = `
+            <p style="font-size:0.8rem;">Busca la constelación de <b>Cáncer</b></p>
+            <div class="constellation-grid">
+                <div class="constellation-card" onclick="checkConstellation('Oso')">
+                    <img src="escorpio.png" alt="Oso">
+                </div>
+                <div class="constellation-card" onclick="checkConstellation('Pez')">
+                    <img src="piscis.png" alt="Pez">
+                </div>
+                <div class="constellation-card" onclick="checkConstellation('Cancer')">
+                    <img src="cancer.png" alt="Cáncer">
+                </div>
+                <div class="constellation-card" onclick="checkConstellation('Leon')">
+                    <img src="leo.png" alt="León">
+                </div>
+            </div>`;
+        document.getElementById('game-controls').innerHTML = "";
+    }
+
+    function checkConstellation(name) {
+        if(name === 'Cancer') winDay(4);
+        else failAttempt();
+    }
+
+    function failAttempt() {
+        vidas--; updateStats();
+        if (vidas <= 0) { localStorage.setItem('last_fail', Date.now().toString()); checkCooldown(); }
+        else alert("¡Incorrecto! ❤️ Te queda " + vidas + " intento.");
+    }
+
+    function winDay(n) {
+        document.getElementById('main-body').classList.remove('night-sky');
+        minigameBox.style.display = "none";
+        localStorage.setItem(`dia${n}_done`, 'true');
+        typeWriter("¡LO HAS LOGRADO! Has recuperado una parte de tu regalo. ¡Mañana más!");
+    }
+
+    let flippedCards = [];
+    let matchedPairs = 0;
+
+    function launchDay5() {
+        minigameBox.style.display = "block";
+        document.getElementById('game-title').innerText = "MEMORIA DE MARINERO";
+        flippedCards = [];
+        matchedPairs = 0;
+        
+        // Objetos a emparejar (emojis para que sea fácil)
+        const items = ['⚓', '⚓', '🧭', '🧭', '🗺️', '🗺️'];
+        // Mezclar aleatoriamente
+        items.sort(() => Math.random() - 0.5);
+
+        let html = `<p style="font-size:0.7rem; margin-bottom:10px;">Encuentra las 3 parejas de objetos</p>
+                    <div id="memory-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; padding:10px;">`;
+        
+        items.forEach((item, index) => {
+            html += `
+                <div class="memory-card" onclick="flipMemoryCard(this, '${item}')" 
+                     style="width:80px; height:80px; background:var(--ac-green); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer; color:transparent; border:3px solid white; transition:0.3s;">
+                     ${item}
+                </div>`;
+        });
+        
+        html += `</div>`;
+        document.getElementById('game-content').innerHTML = html;
+        document.getElementById('game-controls').innerHTML = "";
+    }
+
+    function flipMemoryCard(card, item) {
+        // Evitar clicar la misma carta o cuando ya hay dos giradas
+        if (flippedCards.length < 2 && card.style.color !== 'black') {
+            card.style.color = 'black';
+            card.style.background = 'white';
+            flippedCards.push({card, item});
+
+            if (flippedCards.length === 2) {
+                if (flippedCards[0].item === flippedCards[1].item) {
+                    // ¡Pareja encontrada!
+                    matchedPairs++;
+                    flippedCards = [];
+                    if (matchedPairs === 3) {
+                        setTimeout(() => winDay(5), 600);
+                    }
+                } else {
+                    // No coinciden, volver a girar
+                    setTimeout(() => {
+                        flippedCards[0].card.style.color = 'transparent';
+                        flippedCards[0].card.style.background = 'var(--ac-green)';
+                        flippedCards[1].card.style.color = 'transparent';
+                        flippedCards[1].card.style.background = 'var(--ac-green)';
+                        flippedCards = [];
+                    }, 700);
+                }
+            }
+        }
+    }
+
+   function buyHelp(tipo) {
+        if (bayas >= 500) {
+            let msg = "";
+            const titulo = document.getElementById('game-title').innerText;
+
+            if (titulo.includes("CANELA")) {
+                msg = "CANELA: Recuerdo que ese pez es un 'fósil viviente'. ¡Solo aparece en los días más lluviosos!";
+            } else if (titulo.includes("SÓCRATES")) {
+                msg = "SÓCRATES: Es una obra maestra de Johannes Vermeer, famoso por su manejo de la luz.";
+            } else if (titulo.includes("CUENTAS NOOK")) {
+                msg = "TENDO: Recuerda que las pepitas de oro valen diez mil bayas... ¡diez mil!";
+            } else if (titulo.includes("MAPA")) {
+                msg = "ESTELA: La constelación de Cáncer tiene forma de cangrejo, con dos pinzas grandes arriba.";
+            }
+
+            if (tipo === 'skip') {
+                if (bayas >= 2500) { 
+                    bayas -= 2500; updateStats();
+                    const n = titulo.includes("CANELA") ? 1 : (titulo.includes("SÓCRATES") ? 2 : (titulo.includes("CUENTAS") ? 3 : 4));
+                    winDay(n);
+                    return;
+                } else { alert("No tienes suficientes bayas."); return; }
+            }
+            
+            if (msg !== "") {
+                bayas -= 500; updateStats();
+                alert("PISTA: " + msg);
+            }
+
+            if (titulo.includes("MEMORIA")) {
+                msg = "GULLIVER: ¡Zzz... concéntrate! Si fallas, fíjate bien dónde estaba cada dibujo antes de que se den la vuelta.";
+            }
+        } else { alert("¡Sin bayas!"); }
+    }
+
+    function checkCooldown() {
+        const last = localStorage.getItem('last_fail');
+        if (last) {
+            const diff = Date.now() - parseInt(last);
+            if (diff < COOLDOWN_MS) {
+                document.getElementById('cooldown-screen').style.display = 'flex';
+                updateTimer(); return true;
+            } else localStorage.removeItem('last_fail');
+        }
+        return false;
+    }
+
+    function updateTimer() {
+        const timer = document.getElementById('timer-display');
+        const interval = setInterval(() => {
+            const lastFail = localStorage.getItem('last_fail');
+            if(!lastFail) return;
+            const ms = COOLDOWN_MS - (Date.now() - parseInt(lastFail));
+            if (ms <= 0) { clearInterval(interval); location.reload(); }
+            let m = Math.floor(ms/60000), s = Math.floor((ms%60000)/1000);
+            timer.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+        }, 1000);
+    }
+
+    window.onload = () => { updateStats(); if(!checkCooldown()) nextMessage(); };
+</script>
+</body>
+</html>
