@@ -1196,7 +1196,7 @@
             function loadBayas() {
                 const v = localStorage.getItem(STORAGE_BAYAS) ?? localStorage.getItem(LEGACY_BAYAS);
                 const n = parseInt(v, 10);
-                return Number.isFinite(n) ? n : 3000;
+                return Number.isFinite(n) ? n : 0;
             }
 
             function loadVidas() {
