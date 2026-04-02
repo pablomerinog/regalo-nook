@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regalo Tom Nook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f8f5e4">
+    <title>Isla AC — 3 días</title>
     <style>
         :root {
             --ac-bg: #f8f5e4;
@@ -12,595 +14,2066 @@
             --ac-text: #4b4b4b;
             --ac-yellow: #ffcc00;
             --sky-blue: #0c1445;
+            /* Diálogo estilo burbuja AC */
+            --ac-dialog-bg: #fffef0;
+            --ac-dialog-border: #6b4423;
+            --ac-dialog-shadow: rgba(107, 68, 35, 0.22);
+            --ac-name-shadow: rgba(0, 0, 0, 0.12);
+            --ac-safe-bottom: env(safe-area-inset-bottom, 0px);
+            --font-ui: ui-rounded, "Arial Rounded MT Bold", "Nunito", "Varela Round", system-ui, sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
         }
 
         body {
-            background-color: var(--ac-bg);
-            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            overflow: hidden;
+            min-height: 100dvh;
+            background-color: var(--ac-bg);
             background-image: radial-gradient(#e1dec9 2px, transparent 2px);
-            background-size: 30px 30px;
-            transition: background-color 1s ease;
+            background-size: 24px 24px;
+            font-family: var(--font-ui);
+            color: var(--ac-text);
+            line-height: 1.5;
         }
 
-        /* Efecto Cielo Nocturno Día 4 */
-        .night-sky {
-            background-color: var(--sky-blue) !important;
-            background-image: radial-gradient(white 1px, transparent 1px) !important;
-            background-size: 50px 50px !important;
+        /* Contenedor principal: mobile-first, ancho legible en tablet/desktop */
+        .app {
+            max-width: 26rem;
+            margin: 0 auto;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            padding: 0.75rem 0.875rem calc(0.75rem + var(--ac-safe-bottom));
+            gap: 0.75rem;
         }
 
-        #stats-bar {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 30px;
+        .app-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.625rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: linear-gradient(180deg, var(--ac-bg) 70%, transparent);
+            padding-bottom: 0.25rem;
+        }
+
+        .stats-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: var(--ac-dialog-bg);
             border: 3px solid var(--ac-brown);
-            font-weight: bold;
+            border-radius: 999px;
+            padding: 0.35rem 0.75rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 3px 0 var(--ac-dialog-shadow);
+        }
+
+        .stat-pill__icon {
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .calendar-hint {
+            margin: 0;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--ac-brown);
+            text-align: center;
+            opacity: 0.95;
+        }
+
+        .header-actions {
             display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-shop {
+            min-height: 44px;
+            width: 100%;
+            border: 3px solid var(--ac-brown);
+            border-radius: 16px;
+            background: linear-gradient(180deg, #fffef5 0%, var(--ac-dialog-bg) 100%);
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 0.88rem;
+            color: var(--ac-text);
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--ac-dialog-shadow);
+            display: inline-flex;
             align-items: center;
-            gap: 15px;
-            z-index: 100;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-        }
-
-        #character-area {
-            position: absolute;
-            bottom: 180px;
-            text-align: center;
-        }
-
-        #avatar {
-            width: 450px;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
-        }
-
-        .dialog-box {
-            position: absolute;
-            bottom: 40px;
-            width: 85%;
-            max-width: 650px;
-            background: white;
-            border: 5px solid var(--ac-brown);
-            border-radius: 45px;
-            padding: 30px;
-            box-shadow: 0 10px 0 rgba(0,0,0,0.1);
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .char-name {
-            position: absolute;
-            top: -25px;
-            left: 50px;
-            background: var(--ac-yellow);
-            color: white;
-            padding: 8px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            border: 4px solid var(--ac-brown);
-            font-size: 1.2rem;
-        }
-
-        #text-content {
-            font-size: 1.3rem;
-            color: var(--ac-text);
-            line-height: 1.6;
-            min-height: 80px;
-        }
-
-        #options-container {
-            position: absolute;
-            right: 0px;
-            top: -150px;
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            width: 300px;
-        }
-
-        .option-btn {
-            background: white;
-            border: 3px solid var(--ac-green);
-            padding: 12px 20px;
-            border-radius: 30px;
-            font-family: inherit;
-            font-weight: bold;
-            color: var(--ac-text);
-            cursor: pointer;
-            box-shadow: 5px 5px 0px var(--ac-green);
-            transition: 0.2s;
-        }
-
-        .option-btn:hover { transform: scale(1.05); background: #f0fff0; }
-
-        #minigame-container {
-            display: none;
-            position: absolute;
-            top: 5%;
-            background: white;
-            padding: 20px;
-            border-radius: 30px;
-            border: 5px solid var(--ac-green);
-            text-align: center;
-            z-index: 20;
-            width: 380px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-        }
-
-        .museum-img { width: 180px; border: 3px solid var(--ac-brown); margin: 10px 0; border-radius: 10px; }
-        
-        input[type="text"], input[type="number"] {
-            width: 80%;
-            padding: 10px;
-            border-radius: 20px;
-            border: 2px solid var(--ac-brown);
-            margin: 10px 0;
-            font-family: inherit;
-            text-align: center;
-        }
-
-        /* --- NUEVO ESTILO CONSTELACIONES --- */
-        .constellation-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .constellation-card {
-            background: #1a2a6c;
-            border: 3px solid var(--ac-yellow);
-            border-radius: 15px;
-            padding: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .constellation-card:hover { transform: scale(1.05); background: #2a4a8c; }
-        .constellation-card img { width: 80px; height: 80px; filter: brightness(1.5); }
-
-        #star-counter { font-size: 2rem; color: var(--ac-yellow); font-weight: bold; margin: 10px; }
-
-        .shop-box {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px dashed var(--ac-green);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        #cooldown-screen {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #2c3e50;
-            color: white;
-            z-index: 1000;
-            flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
+            gap: 0.4rem;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.12s ease;
         }
 
-        .next-btn {
+        .btn-shop:active {
+            transform: scale(0.98);
+        }
+
+        .btn-shop:focus-visible {
+            outline: 3px solid var(--ac-yellow);
+            outline-offset: 2px;
+        }
+
+        .btn-shop[hidden] {
+            display: none !important;
+        }
+
+        /* Modal tienda */
+        .shop-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .shop-modal[hidden] {
+            display: none !important;
+        }
+
+        .shop-modal__backdrop {
             position: absolute;
-            bottom: 20px;
-            right: 35px;
-            color: var(--ac-green);
-            font-size: 1.5rem;
-            animation: bounce 1s infinite;
-            display: none;
+            inset: 0;
+            background: rgba(40, 30, 20, 0.45);
+            backdrop-filter: blur(3px);
         }
 
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        
+        .shop-modal__sheet {
+            position: relative;
+            width: 100%;
+            max-width: 26rem;
+            max-height: min(88dvh, 640px);
+            overflow: auto;
+            background: var(--ac-bg);
+            background-image: radial-gradient(#e1dec9 2px, transparent 2px);
+            background-size: 24px 24px;
+            border: 4px solid var(--ac-brown);
+            border-radius: 28px 28px 0 0;
+            padding: 1rem 0.875rem calc(1rem + var(--ac-safe-bottom));
+            box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.2);
+            animation: shopSheetIn 0.28s ease;
+        }
+
+        @keyframes shopSheetIn {
+            from {
+                transform: translateY(12px);
+                opacity: 0.85;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .shop-modal__close {
+            position: absolute;
+            top: 0.6rem;
+            right: 0.6rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid var(--ac-brown);
+            background: var(--ac-dialog-bg);
+            font-size: 1.35rem;
+            line-height: 1;
+            font-weight: 800;
+            color: var(--ac-brown);
+            cursor: pointer;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        body.night-sky .shop-modal__sheet {
+            background: #1a2744;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+            background-size: 24px 24px;
+            border-color: var(--ac-yellow);
+        }
+
+        body.night-sky .shop-modal__close {
+            background: #2a3f5c;
+            color: var(--ac-yellow);
+            border-color: var(--ac-yellow);
+        }
+
+        /* Paneles de día — solo uno visible (elige el calendario en JS) */
+        .day-panels {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .day-panel {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.75rem;
+            animation: panelIn 0.35s ease;
+        }
+
+        .day-panel.is-active {
+            display: flex;
+        }
+
+        @keyframes panelIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Fases del flujo: HISTORIA → RETO → RESULTADO (visibilidad la controlará la máquina de estados) */
+        .phase {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.75rem;
+        }
+
+        .phase.is-visible {
+            display: flex;
+        }
+
+        .phase-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--ac-brown);
+            margin: 0;
+            opacity: 0.85;
+        }
+
+        /* Escena con personaje + diálogo */
+        .scene {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            justify-content: flex-end;
+            min-height: 12rem;
+            padding-bottom: 0.25rem;
+        }
+
+        .character-wrap {
+            position: relative;
+            width: min(72vw, 220px);
+            margin-bottom: 0.5rem;
+        }
+
+        .character {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.12));
+            transform-origin: 50% 100%;
+        }
+
+        .character--float {
+            animation: acFloat 2.8s ease-in-out infinite;
+        }
+
+        .character--bounce {
+            animation: acBounce 1.1s ease-in-out infinite;
+        }
+
+        @keyframes acFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-1deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(1deg);
+            }
+        }
+
+        @keyframes acBounce {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            40% {
+                transform: translateY(-14px) scale(1.02);
+            }
+
+            55% {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Diálogo estilo Animal Crossing */
+        .dialog {
+            position: relative;
+            width: 100%;
+            background: var(--ac-dialog-bg);
+            border: 4px solid var(--ac-dialog-border);
+            border-radius: 28px;
+            padding: 1.35rem 1.1rem 1rem;
+            box-shadow:
+                0 6px 0 var(--ac-dialog-shadow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.65);
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .dialog__nameplate {
+            position: absolute;
+            top: -0.85rem;
+            left: 1.25rem;
+            background: var(--ac-yellow);
+            color: #fff;
+            text-shadow: 0 1px 0 var(--ac-name-shadow);
+            padding: 0.35rem 1rem;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            border: 3px solid var(--ac-brown);
+            box-shadow: 0 2px 0 var(--ac-dialog-shadow);
+        }
+
+        .dialog__text {
+            margin: 0.35rem 0 0;
+            font-size: 1rem;
+            line-height: 1.55;
+            min-height: 3.2rem;
+            max-height: min(42vh, 280px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dialog__hint {
+            margin: 0.5rem 0 0;
+            font-size: 0.75rem;
+            color: var(--ac-brown);
+            opacity: 0.9;
+        }
+
+        .dialog__continue {
+            position: absolute;
+            right: 1rem;
+            bottom: 0.65rem;
+            color: var(--ac-green);
+            font-size: 1.25rem;
+            font-weight: 900;
+            animation: acBounce 1s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .dialog.is-typing .dialog__continue {
+            opacity: 0.25;
+            animation: none;
+        }
+
+        .dialog.is-awaiting-choice .dialog__continue {
+            opacity: 0;
+            animation: none;
+        }
+
+        /* Animación tipo Animal Crossing: cada carácter “aparece” */
+        .dialog__glyph {
+            display: inline-block;
+            animation: acGlyph 0.085s ease-out;
+        }
+
+        @keyframes acGlyph {
+            0% {
+                opacity: 0.35;
+                transform: translateY(0.11em) scale(0.94);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .dialog__glyph {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+
+            .dialog.is-typing .dialog__continue {
+                opacity: 1;
+            }
+        }
+
+        .dialog-options {
+            display: none;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .dialog-options.is-open {
+            display: flex;
+        }
+
+        .dialog-option {
+            min-height: 44px;
+            border: 3px solid var(--ac-green);
+            border-radius: 999px;
+            background: #fff;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--ac-text);
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(120, 188, 97, 0.45);
+            transition: transform 0.15s ease, background 0.2s ease;
+        }
+
+        .dialog-option:active {
+            transform: scale(0.98);
+        }
+
+        /* Área de reto / minijuego (placeholder visual) */
+        .challenge-shell {
+            background: var(--ac-dialog-bg);
+            border: 4px solid var(--ac-green);
+            border-radius: 24px;
+            padding: 1rem;
+            box-shadow: 0 6px 0 rgba(120, 188, 97, 0.25);
+        }
+
+        .challenge-shell h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1rem;
+            color: var(--ac-brown);
+        }
+
+        .challenge-placeholder {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--ac-text);
+            opacity: 0.9;
+        }
+
+        /* —— Día 1: tutorial previo al minijuego + cuadrícula —— */
+        .day1-reto-root {
+            position: relative;
+            width: 100%;
+        }
+
+        .day1-tutorial-layer {
+            transition: opacity 0.45s ease;
+        }
+
+        .day1-tutorial-layer[hidden] {
+            display: none !important;
+        }
+
+        .scene--compact {
+            min-height: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .scene--compact .character-wrap {
+            width: min(58vw, 160px);
+            margin-bottom: 0.35rem;
+        }
+
+        .dialog--day1-tutorial {
+            background: #f8f5e4;
+            border-radius: 24px;
+            font-family: var(--font-ui);
+        }
+
+        .dialog--day1-tutorial .dialog__text {
+            max-height: min(38vh, 240px);
+        }
+
+        .dialog--day1-tutorial .dialog__text strong {
+            color: var(--ac-brown);
+        }
+
+        .dialog__continue--mini {
+            font-size: 1.1rem;
+        }
+
+        @keyframes acJoy {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            20% {
+                transform: translateY(-20px) scale(1.06) rotate(-2deg);
+            }
+
+            45% {
+                transform: translateY(-6px) scale(1.03) rotate(2deg);
+            }
+
+            70% {
+                transform: translateY(-14px) scale(1.05) rotate(-1deg);
+            }
+        }
+
+        .character--joy {
+            animation: acJoy 0.85s ease-in-out;
+        }
+
+        .day1-game-layer {
+            transition: opacity 0.45s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            align-items: stretch;
+        }
+
+        .day1-game-layer[hidden] {
+            display: none !important;
+        }
+
+        .day1-game-hud {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            padding: 0.5rem 0.65rem;
+            background: var(--ac-dialog-bg);
+            border: 3px solid var(--ac-brown);
+            border-radius: 18px;
+            font-weight: 800;
+            font-size: 0.88rem;
+            box-shadow: 0 4px 0 var(--ac-dialog-shadow);
+        }
+
+        .day1-game-hud span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .day1-timer {
+            color: var(--ac-brown);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .day1-memory-tip {
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.82rem;
+            color: var(--ac-green);
+            margin: 0;
+            min-height: 1.25rem;
+        }
+
+        .day1-hole-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.45rem;
+            width: 100%;
+            padding: 0.25rem 0;
+        }
+
+        .day1-hole {
+            position: relative;
+            aspect-ratio: 1;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            border-radius: 50%;
+            background: var(--ac-bg);
+            border: 3px solid var(--ac-brown);
+            box-shadow:
+                inset 0 5px 10px rgba(0, 0, 0, 0.18),
+                inset 0 -2px 6px rgba(255, 255, 255, 0.35),
+                0 3px 0 var(--ac-dialog-shadow);
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.12s ease;
+        }
+
+        .day1-hole:active {
+            transform: scale(0.96);
+        }
+
+        .day1-hole:focus-visible {
+            outline: 3px solid var(--ac-yellow);
+            outline-offset: 2px;
+        }
+
+        .day1-hole__icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.1rem, 5.5vw, 1.45rem);
+            line-height: 1;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .day1-hole.is-covered .day1-hole__icon {
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        .day1-hole.is-mismatch {
+            animation: holeWobble 0.4s ease;
+        }
+
+        @keyframes holeWobble {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px);
+            }
+
+            75% {
+                transform: translateX(4px);
+            }
+        }
+
+        @keyframes screenShake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            15% {
+                transform: translateX(-7px);
+            }
+
+            30% {
+                transform: translateX(7px);
+            }
+
+            45% {
+                transform: translateX(-5px);
+            }
+
+            60% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-3px);
+            }
+        }
+
+        body.day1-screen-shake {
+            animation: screenShake 0.48s ease;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .character--joy {
+                animation: none;
+            }
+
+            body.day1-screen-shake {
+                animation: none;
+            }
+        }
+
+        /* Resultado */
+        .result-banner {
+            text-align: center;
+            padding: 1.25rem 1rem;
+            background: var(--ac-dialog-bg);
+            border: 4px solid var(--ac-yellow);
+            border-radius: 24px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            box-shadow: 0 6px 0 rgba(212, 168, 0, 0.25);
+        }
+
+        /* Tienda Tendo & Nendo */
+        .shop-header {
+            text-align: center;
+            margin: 0 0 0.25rem;
+            font-size: 1.1rem;
+            color: var(--ac-brown);
+        }
+
+        .shop-owners {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 0.75rem;
+            padding: 0.5rem 0 0.75rem;
+        }
+
+        .shop-owners img {
+            width: min(38vw, 120px);
+            height: auto;
+            image-rendering: auto;
+            filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.12));
+        }
+
+        .shop-owners .character--float {
+            width: min(38vw, 120px);
+        }
+
+        .shop-panel {
+            background: var(--ac-dialog-bg);
+            border: 4px solid var(--ac-brown);
+            border-radius: 24px;
+            padding: 1rem;
+            box-shadow: 0 6px 0 var(--ac-dialog-shadow);
+        }
+
+        .shop-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .shop-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding: 0.5rem 0.65rem;
+            border: 2px dashed var(--ac-green);
+            border-radius: 16px;
+            font-size: 0.85rem;
+        }
+
+        .shop-item button {
+            min-height: 40px;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            border: 3px solid var(--ac-brown);
+            background: var(--ac-yellow);
+            color: #fff;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-shadow: 0 1px 0 var(--ac-name-shadow);
+        }
+
+        body.night-sky {
+            background-color: var(--sky-blue);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.9) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        body.night-sky .app-header {
+            background: linear-gradient(180deg, var(--sky-blue) 70%, transparent);
+        }
+
+        body.night-sky .stat-pill {
+            background: #1a2744;
+            color: #e8ecf7;
+            border-color: var(--ac-yellow);
+        }
+
+        body.night-sky .calendar-hint {
+            color: var(--ac-yellow);
+        }
+
+        body.night-sky .phase-label,
+        body.night-sky .shop-header {
+            color: var(--ac-yellow);
+        }
+
+        /* Tema “obra / día 1” tras la transición (sigue siendo AC: crema, verde, pattern) */
+        body.ac-theme-day1 {
+            background-color: #dce8c8;
+            background-image:
+                radial-gradient(ellipse 120% 80% at 50% -20%, rgba(184, 220, 160, 0.65) 0%, transparent 55%),
+                radial-gradient(circle at 15% 85%, rgba(255, 204, 0, 0.15) 0%, transparent 35%),
+                radial-gradient(#c5d4a4 1.5px, transparent 1.5px);
+            background-size: 100% 100%, 100% 100%, 20px 20px;
+        }
+
+        body.ac-theme-day1 .app-header {
+            background: linear-gradient(180deg, #dce8c8 70%, transparent);
+        }
+
+        body.ac-theme-day1 .calendar-hint {
+            color: #4d6b38;
+        }
+
+        /* Entrada al día: tarjeta estilo cartón AC */
+        .day-transition {
+            position: fixed;
+            inset: 0;
+            z-index: 180;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            pointer-events: none;
+        }
+
+        .day-transition[hidden] {
+            display: none !important;
+        }
+
+        .day-transition__backdrop {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(248, 245, 228, 0.92) 0%, rgba(220, 232, 200, 0.88) 55%, rgba(120, 188, 97, 0.25) 100%);
+            opacity: 0;
+        }
+
+        .day-transition__card {
+            position: relative;
+            text-align: center;
+            padding: 1.5rem 1.75rem 1.35rem;
+            min-width: min(18rem, 90vw);
+            background: var(--ac-dialog-bg);
+            border: 5px solid var(--ac-brown);
+            border-radius: 28px;
+            box-shadow:
+                0 12px 0 var(--ac-dialog-shadow),
+                inset 0 2px 0 rgba(255, 255, 255, 0.7);
+            transform: scale(0.82) translateY(1.5rem);
+            opacity: 0;
+        }
+
+        .day-transition__eyebrow {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ac-green);
+            margin-bottom: 0.35rem;
+        }
+
+        .day-transition__title {
+            display: block;
+            font-size: 1.85rem;
+            font-weight: 900;
+            color: var(--ac-brown);
+            line-height: 1.15;
+            text-shadow: 1px 2px 0 rgba(255, 255, 255, 0.45);
+        }
+
+        .day-transition__subtitle {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--ac-text);
+            opacity: 0.9;
+        }
+
+        .day-transition.is-active .day-transition__backdrop {
+            animation: dayTransFade 1.15s ease forwards;
+        }
+
+        .day-transition.is-active .day-transition__card {
+            animation: dayTransCard 1.15s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+        }
+
+        @keyframes dayTransFade {
+            0% {
+                opacity: 0;
+            }
+
+            18% {
+                opacity: 1;
+            }
+
+            78% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes dayTransCard {
+            0% {
+                opacity: 0;
+                transform: scale(0.82) translateY(1.5rem);
+            }
+
+            22% {
+                opacity: 1;
+                transform: scale(1.06) translateY(-0.15rem);
+            }
+
+            45% {
+                transform: scale(0.99) translateY(0);
+            }
+
+            70% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1.02) translateY(-0.75rem);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .day-transition.is-active .day-transition__backdrop,
+            .day-transition.is-active .day-transition__card {
+                animation-duration: 0.01ms;
+                animation-iteration-count: 1;
+            }
+
+            .day-transition.is-active .day-transition__card {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
     </style>
 </head>
+
 <body id="main-body">
-
-<div id="stats-bar">
-    <span>💰 <span id="baya-count">3000</span></span>
-    <span>❤️ <span id="vida-count">2</span></span>
-</div>
-
-<div id="cooldown-screen">
-    <h1>⚠️ ISLA EN MANTENIMIENTO ⚠️</h1>
-    <p>Seguridad de la isla: Has fallado demasiadas veces.</p>
-    <h2 id="timer-display">--:--</h2>
-    <p>Vuelve cuando termine el cronómetro.</p>
-</div>
-
-<div id="character-area">
-    <img id="avatar" src="tom.png" alt="Personaje">
-</div>
-
-<div id="minigame-container">
-    <h3 id="game-title" style="color: var(--ac-brown); margin:0;">RETO</h3>
-    <div id="star-counter" style="display:none;">0 / 10</div>
-    <div id="game-content"></div>
-    <div id="game-controls"></div>
-    <div class="shop-box">
-        <button class="option-btn" style="font-size: 0.7rem;" id="btn-pista" onclick="buyHelp('pista')">Pista (500B)</button>
-        <button class="option-btn" style="font-size: 0.7rem;" id="btn-skip" onclick="buyHelp('skip')">Comprar Solución (2500B)</button>
+    <div id="day-transition" class="day-transition" hidden>
+        <div class="day-transition__backdrop" aria-hidden="true"></div>
+        <div class="day-transition__card" role="status" aria-live="assertive">
+            <span class="day-transition__eyebrow"></span>
+            <span class="day-transition__title"></span>
+            <span class="day-transition__subtitle"></span>
+        </div>
     </div>
-</div>
+    <div class="app">
+        <header class="app-header">
+            <div class="stats-row">
+                <span class="stat-pill" title="Bayas">
+                    <span class="stat-pill__icon" aria-hidden="true">🪙</span>
+                    <span id="baya-count">0</span> <span class="visually-hidden">bayas</span>
+                </span>
+                <span class="stat-pill" title="Oportunidades">
+                    <span class="stat-pill__icon" aria-hidden="true">❤️</span>
+                    <span id="vida-count">3</span> <span class="visually-hidden">oportunidades</span>
+                </span>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="btn-shop" id="btn-open-shop" hidden>
+                    <span aria-hidden="true">🏠</span> Tienda Nook (Tendo y Nendo)
+                </button>
+                <p id="calendar-hint" class="calendar-hint" aria-live="polite"></p>
+            </div>
+        </header>
 
-<div class="dialog-box" onclick="handleBoxClick()">
-    <div class="char-name" id="char-name">Cargando...</div>
-    <div id="text-content">Iniciando Nookófono...</div>
-    <div id="options-container"></div>
-    <div class="next-btn" id="next-icon">▼</div>
-</div>
+        <main class="day-panels">
+            <!-- Fuera de calendario: solo mensaje -->
+            <section id="waiting" class="day-panel" aria-labelledby="waiting-title" data-day="0">
+                <h1 id="waiting-title" class="visually-hidden">Próximamente</h1>
+                <div class="phase phase--historia is-visible" data-phase="historia">
+                    <div class="scene" style="min-height: 14rem;">
+                        <div class="character-wrap">
+                            <img class="character character--float" src="tom.png" alt="Tom Nook">
+                        </div>
+                        <div class="dialog" role="button" tabindex="0" data-ac-dialog="waiting">
+                            <span class="dialog__nameplate" id="waiting-char-name">Tom Nook</span>
+                            <p class="dialog__text" id="waiting-dialog-text"></p>
+                            <span class="dialog__continue" aria-hidden="true">▼</span>
+                            <div class="dialog-options" id="waiting-dialog-options"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-<script>
-    const hoy = new Date();
-    const dia = hoy.getDate();
-    const mes = hoy.getMonth() + 1;
+            <!-- Día 1: Tom Nook -->
+            <section id="day-1" class="day-panel" aria-labelledby="day1-title" data-day="1">
+                <h1 id="day1-title" class="visually-hidden">Día 1 — Tom Nook</h1>
 
-    let dialogs = [];
-    let currentStep = 0;
-    let isTyping = false;
-    let showingOptions = false;
-    let isShowingReply = false;
-    let pistaUsada = false;
-    
-    let bayas = parseInt(localStorage.getItem('bayas')) || 3000;
-    let vidas = 2;
-    const COOLDOWN_MS = 30 * 60 * 1000;
+                <div class="phase phase--historia is-visible" data-phase="historia">
+                    <p class="phase-label">Historia</p>
+                    <div class="scene">
+                        <div class="character-wrap">
+                            <img class="character character--float" src="tom.png" alt="Tom Nook">
+                        </div>
+                        <div class="dialog" role="button" tabindex="0" data-ac-dialog="day-1">
+                            <span class="dialog__nameplate" id="day1-char-name">Tom Nook</span>
+                            <p class="dialog__text" id="day1-dialog-text"></p>
+                            <span class="dialog__continue" aria-hidden="true">▼</span>
+                            <div class="dialog-options" id="day1-dialog-options"></div>
+                        </div>
+                    </div>
+                    <p class="dialog__hint">Después de esta charla: reto del día y resultado.</p>
+                </div>
 
-    function updateStats() {
-        document.getElementById('baya-count').innerText = bayas;
-        document.getElementById('vida-count').innerText = vidas;
-        localStorage.setItem('bayas', bayas);
-    }
+                <div class="phase phase--reto" data-phase="reto">
+                    <p class="phase-label">Reto — Zona de obras</p>
+                    <div id="day1-reto-root" class="day1-reto-root">
+                        <div id="day1-tutorial-layer" class="day1-tutorial-layer">
+                            <div class="scene scene--compact">
+                                <div class="character-wrap">
+                                    <img id="day1-tutorial-tom" class="character character--float" src="tom.png"
+                                        alt="Tom Nook">
+                                </div>
+                                <div id="day1-tutorial-dialog" class="dialog dialog--day1-tutorial" role="button"
+                                    tabindex="0">
+                                    <span class="dialog__nameplate">Tom Nook</span>
+                                    <p class="dialog__text" id="day1-tutorial-text"></p>
+                                    <span class="dialog__continue dialog__continue--mini" aria-hidden="true">▼</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="day1-game-layer" class="day1-game-layer" hidden>
+                            <p id="day1-memory-tip" class="day1-memory-tip" aria-live="polite"></p>
+                            <div class="day1-game-hud">
+                                <span class="day1-timer"><span id="day1-timer">40</span>s</span>
+                                <span title="Pepitas">🔩 <span id="day1-count-iron">0</span>/3</span>
+                                <span title="Madera">🪵 <span id="day1-count-wood">0</span>/3</span>
+                            </div>
+                            <div id="day1-hole-grid" class="day1-hole-grid" role="grid" aria-label="Hoyos en la obra">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    // --- LÓGICA DE DÍAS ---
-    if (mes === 3 && dia >= 29 && dia <= 31) {
-        dialogs = [
-            { name: "Tom Nook", img: "tom.png", text: "¡Hola, hola! Qué alegría verte por aquí, sí, sí. Bienvenido a este proyecto tan especial." },
-            { name: "Tom Nook", img: "tom.png", text: "Me temo que el hidroavión de Dodo Airlines tuvo un pequeño percance con las cajas de tu regalo..." },
-            { name: "Tom Nook", img: "tom.png", text: "Rafa se distrajo mirando una mariposa y ¡puf! Las cajas cayeron por toda la isla." },
-            { name: "Tom Nook", img: "tom.png", text: "He asignado un presupuesto de 3.000 bayas para tus gastos. ¡Úsalas con cabeza, sí, sí!" },
-            { name: "Tom Nook", img: "tom.png", text: "A partir de mañana, Canela te dará los detalles en el informativo. ¡Descansa hoy!" }
-        ];
-    } 
-    else if (mes === 4 && dia === 1) {
-        if (localStorage.getItem('dia1_done')) {
-            dialogs = [{ name: "Canela", img: "canela.png", text: "¡Ya recuperaste la llave! Mañana Sócrates tendrá más noticias." }];
-        } else {
-            dialogs = [
-                { name: "Canela", img: "canela.png", text: "¡Buenos días! Soy Canela. Un pez gigante tiene la llave del almacén..." },
-                { name: "Canela", img: "canela.png", text: "Recuerda que tienes 2 intentos antes de que el sistema se bloquee.",
-                  options: [{ text: "¡Empezar reto!", action: "launchDay1" }] }
-            ];
-        }
-    } 
-    else if (mes === 4 && dia === 2) {
-        if (localStorage.getItem('dia2_done')) {
-            dialogs = [{ name: "Sócrates", img: "socrates.png", text: "¡Uuuh! Ya identificamos el cuadro hoy. ¡Vuelve mañana!" }];
-        } else {
-            dialogs = [
-                { name: "Sócrates", img: "socrates.png", text: "¡Uuuh! He encontrado una caja de regalo enterrada." },
-                { name: "Sócrates", img: "socrates.png", text: "¿Podrías identificar esta famosa obra de arte?", 
-                  options: [{ text: "¡Identificar cuadro!", action: "launchDay2" }] }
-            ];
-        }
-    } 
-    else if (mes === 4 && dia === 3) {
-        if (localStorage.getItem('dia3_done')) {
-            dialogs = [{ name: "Tendo", img: "tendo.png", text: "¡Gracias por las cuentas! ...cuentas!" }];
-        } else {
-            dialogs = [
-                { name: "Tendo", img: "tendo.png", text: "¡Hola, hola! La caja registradora se ha roto... ¡roto!" },
-                { name: "Nendo", img: "nendo.png", text: "Ayúdanos a calcular las ventas para recuperar tu paquete... ¡paquete!",
-                  options: [{ text: "¡Hacer cuentas!", action: "launchDay3" }] }
-            ];
-        }
-    } 
-    else if (mes === 4 && dia === 4) {
-        if (localStorage.getItem('dia4_done')) {
-            dialogs = [{ name: "Estela", img: "estela.png", text: "¡Esa constelación es preciosa! Gracias por ayudarme." }];
-        } else {
-            dialogs = [
-                { name: "Estela", img: "estela.png", text: "¡Uuuuh! ¡Mira qué cielo tan despejado!" },
-                { name: "Estela", img: "estela.png", text: "Estoy intentando registrar una constelación en mi diario que tiene forma de **Cangrejo (Cáncer)**." },
-                { name: "Estela", img: "estela.png", text: "¿Podrías señalarla en el firmamento para que pueda dibujarla?",
-                  options: [{ text: "¡Buscar en el cielo!", action: "launchDay4" }] }
-            ];
-        }
-    }
-    else if (mes === 4 && dia === 5) { // DÍA 5 - 30 de Marzo
-        if (localStorage.getItem('dia5_done')) {
-            dialogs = [{ name: "Gulliver", img: "gulliver.png", text: "¡Gracias por refrescarme la memoria, marinero! Ya recuerdo dónde puse mi brújula." }];
-        } else {
-            dialogs = [
-                { name: "Gulliver", img: "gulliver.png", text: "¡Zzz... mar... tormenta... ¡Ah! ¿Quién eres tú? ¿Dónde estoy?" },
-                { name: "Gulliver", img: "gulliver.png", text: "He debido de darme un buen golpe, porque no recuerdo qué objetos traía en mi equipaje de regalo." },
-                { name: "Gulliver", img: "gulliver.png", text: "Si me ayudas a emparejar estos objetos, mi memoria volverá a ser la de un capitán. ¿Probamos?",
-                  options: [{ text: "¡Ayudar a Gulliver!", action: "launchDay5" }] }
-            ];
-        }
-    }
-    else {
-        dialogs = [{ name: "Tom Nook", img: "tom.png", text: "Paciencia, sí, sí. Vuelve el 1 de abril." }];
-    }
+                <div class="phase phase--resultado" data-phase="resultado">
+                    <p class="phase-label">Resultado</p>
+                    <div class="result-banner" id="day1-result">
+                        Aquí se mostrará el resultado del reto del día 1.
+                    </div>
+                </div>
+            </section>
 
-    const textElement = document.getElementById('text-content');
-    const nameElement = document.getElementById('char-name');
-    const avatarElement = document.getElementById('avatar');
-    const optionsContainer = document.getElementById('options-container');
-    const nextIcon = document.getElementById('next-icon');
-    const minigameBox = document.getElementById('minigame-container');
+            <!-- Día 2: Canela -->
+            <section id="day-2" class="day-panel" aria-labelledby="day2-title" data-day="2">
+                <h1 id="day2-title" class="visually-hidden">Día 2 — Canela</h1>
 
-    function typeWriter(text, callback) {
-        isTyping = true;
-        nextIcon.style.display = "none";
-        let i = 0;
-        textElement.innerHTML = "";
-        const timer = setInterval(() => {
-            textElement.innerHTML += text.charAt(i);
-            i++;
-            if (i >= text.length) {
-                clearInterval(timer);
-                isTyping = false;
-                if (callback) callback();
-                else nextIcon.style.display = "block";
+                <div class="phase phase--historia is-visible" data-phase="historia">
+                    <p class="phase-label">Historia</p>
+                    <div class="scene">
+                        <div class="character-wrap">
+                            <img class="character character--bounce" src="canela.png" alt="Canela">
+                        </div>
+                        <div class="dialog" role="button" tabindex="0" data-ac-dialog="day-2">
+                            <span class="dialog__nameplate" id="day2-char-name">Canela</span>
+                            <p class="dialog__text" id="day2-dialog-text"></p>
+                            <span class="dialog__continue" aria-hidden="true">▼</span>
+                            <div class="dialog-options" id="day2-dialog-options"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase phase--reto" data-phase="reto">
+                    <p class="phase-label">Reto</p>
+                    <div class="challenge-shell">
+                        <h2>Flores vs hierbajos</h2>
+                        <p class="challenge-placeholder">Clasificación de ítems. Conectar con estado RETO.</p>
+                    </div>
+                </div>
+
+                <div class="phase phase--resultado" data-phase="resultado">
+                    <p class="phase-label">Resultado</p>
+                    <div class="result-banner" id="day2-result">Resultado del día 2.</div>
+                </div>
+            </section>
+
+            <!-- Día 3: Estela (noche) -->
+            <section id="day-3" class="day-panel" aria-labelledby="day3-title" data-day="3">
+                <h1 id="day3-title" class="visually-hidden">Día 3 — Estela</h1>
+
+                <div class="phase phase--historia is-visible" data-phase="historia">
+                    <p class="phase-label">Historia</p>
+                    <div class="scene">
+                        <div class="character-wrap">
+                            <img class="character character--float" src="estela.png" alt="Estela">
+                        </div>
+                        <div class="dialog" role="button" tabindex="0" data-ac-dialog="day-3">
+                            <span class="dialog__nameplate" id="day3-char-name">Estela</span>
+                            <p class="dialog__text" id="day3-dialog-text"></p>
+                            <span class="dialog__continue" aria-hidden="true">▼</span>
+                            <div class="dialog-options" id="day3-dialog-options"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase phase--reto" data-phase="reto">
+                    <p class="phase-label">Reto</p>
+                    <div class="challenge-shell">
+                        <h2>Constelación zodiacal</h2>
+                        <p class="challenge-placeholder">Imágenes de zodiaco (tus assets). Estado RETO.</p>
+                    </div>
+                </div>
+
+                <div class="phase phase--resultado" data-phase="resultado">
+                    <p class="phase-label">Resultado</p>
+                    <div class="result-banner" id="day3-result">Resultado del día 3.</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="shop-modal" class="shop-modal" role="dialog" aria-modal="true" aria-labelledby="shop-title" hidden>
+        <div class="shop-modal__backdrop" tabindex="-1" data-close-shop></div>
+        <div class="shop-modal__sheet">
+            <button type="button" class="shop-modal__close" data-close-shop aria-label="Cerrar tienda">×</button>
+            <h2 id="shop-title" class="shop-header">Tendo y Nendo</h2>
+            <div class="shop-owners">
+                <img class="character--float" src="tendo.png" alt="Tendo">
+                <img class="character--float" src="nendo.png" alt="Nendo" style="animation-delay: 0.4s;">
+            </div>
+            <div class="shop-panel">
+                <p class="challenge-placeholder" style="margin: 0 0 0.75rem;">
+                    Gasta bayas en ventajas durante tu misión de hoy.
+                </p>
+                <ul class="shop-list">
+                    <li class="shop-item">
+                        <span>Pista extra</span>
+                        <button type="button" data-shop="pista">500 🪙</button>
+                    </li>
+                    <li class="shop-item">
+                        <span>Saltar reto (solución)</span>
+                        <button type="button" data-shop="skip">2500 🪙</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const STORAGE_BAYAS = 'ac_bayas';
+            const STORAGE_VIDAS = 'ac_vidas';
+            const LEGACY_BAYAS = 'bayas';
+
+            function loadBayas() {
+                const v = localStorage.getItem(STORAGE_BAYAS) ?? localStorage.getItem(LEGACY_BAYAS);
+                const n = parseInt(v, 10);
+                return Number.isFinite(n) ? n : 3000;
             }
-        }, 30);
-    }
 
-    function handleBoxClick() {
-        if (isTyping || showingOptions || checkCooldown()) return;
-        if (isShowingReply) { isShowingReply = false; nextMessage(); return; }
-        nextMessage();
-    }
+            function loadVidas() {
+                const v = localStorage.getItem(STORAGE_VIDAS);
+                const n = parseInt(v, 10);
+                return Number.isFinite(n) ? Math.min(3, Math.max(0, n)) : 3;
+            }
 
-    function nextMessage() {
-        if (currentStep < dialogs.length) {
-            const d = dialogs[currentStep];
-            nameElement.innerText = d.name;
-            avatarElement.src = d.img;
-            if (d.options) typeWriter(d.text, () => showOptions(d.options));
-            else typeWriter(d.text);
-            currentStep++;
-        }
-    }
+            function saveStats(bayas, vidas) {
+                localStorage.setItem(STORAGE_BAYAS, String(bayas));
+                localStorage.setItem(STORAGE_VIDAS, String(vidas));
+            }
 
-    function showOptions(options) {
-        showingOptions = true;
-        optionsContainer.innerHTML = "";
-        optionsContainer.style.display = "flex";
-        options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = "option-btn";
-            btn.innerText = opt.text;
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                showingOptions = false;
-                optionsContainer.style.display = "none";
-                if(opt.action === "launchDay1") launchDay1();
-                else if(opt.action === "launchDay2") launchDay2();
-                else if(opt.action === "launchDay3") launchDay3();
-                else if(opt.action === "launchDay4") launchDay4();
-                else { isShowingReply = true; typeWriter(opt.reply); }
+            let bayas = loadBayas();
+            let vidas = loadVidas();
+
+            function renderStats() {
+                document.getElementById('baya-count').textContent = String(bayas);
+                document.getElementById('vida-count').textContent = String(vidas);
+                saveStats(bayas, vidas);
+            }
+
+            const panels = document.querySelectorAll('.day-panel');
+            const shopModal = document.getElementById('shop-modal');
+            const btnOpenShop = document.getElementById('btn-open-shop');
+            const calendarHint = document.getElementById('calendar-hint');
+
+            const PANEL_TEXT_IDS = {
+                'waiting': { text: 'waiting-dialog-text', name: 'waiting-char-name', options: 'waiting-dialog-options' },
+                'day-1': { text: 'day1-dialog-text', name: 'day1-char-name', options: 'day1-dialog-options' },
+                'day-2': { text: 'day2-dialog-text', name: 'day2-char-name', options: 'day2-dialog-options' },
+                'day-3': { text: 'day3-dialog-text', name: 'day3-char-name', options: 'day3-dialog-options' },
             };
-            optionsContainer.appendChild(btn);
-        });
-    }
 
-    // --- MINIJUEGOS ---
-    function launchDay1() {
-        minigameBox.style.display = "block";
-        document.getElementById('game-title').innerText = "RETO DE CANELA";
-        document.getElementById('game-content').innerHTML = `<img src="celacanto.png" class="shadow-img">`;
-        const ctrls = document.getElementById('game-controls');
-        ctrls.innerHTML = "";
-        ["Celacanto", "Pez Sol", "Atún", "Tiburón Ballena"].forEach(e => {
-            const b = document.createElement('button');
-            b.className = "option-btn"; b.innerText = e; b.style.display = "block"; b.style.width = "100%"; b.style.marginBottom = "5px";
-            b.onclick = () => e === "Celacanto" ? winDay(1) : failAttempt();
-            ctrls.appendChild(b);
-        });
-    }
+            function goToPhase(panelId, phase) {
+                const panel = document.getElementById(panelId);
+                if (!panel) return;
+                panel.querySelectorAll('.phase').forEach(ph => {
+                    ph.classList.toggle('is-visible', ph.getAttribute('data-phase') === phase);
+                });
+            }
 
-    function launchDay2() {
-        minigameBox.style.display = "block";
-        document.getElementById('game-title').innerText = "SÓCRATES: ARTE";
-        document.getElementById('game-content').innerHTML = `
-            <img src="cuadro_joven.png" class="museum-img">
-            <input type="text" id="museum-input" placeholder="Nombre del cuadro...">`;
-        document.getElementById('game-controls').innerHTML = `<button class="option-btn" style="width:100%" onclick="checkM()">Entregar</button>`;
-    }
+            /**
+             * Mapa calendario → panel visible (ajusta fechas al evento real).
+             * Solo un panel .day-panel lleva .is-active; el botón de tienda solo en días 1–3.
+             */
+            function getPanelIdForCalendarDate(date) {
+                const mes = date.getMonth() + 1;
+                const dia = date.getDate();
+                if (mes === 4 && dia === 2) return 'day-1';
+                if (mes === 4 && dia === 3) return 'day-2';
+                if (mes === 4 && dia === 4) return 'day-3';
+                return 'waiting';
+            }
 
-    function checkM() {
-        const a = document.getElementById('museum-input').value.toLowerCase();
-        (a.includes("perla") || a.includes("joven")) ? winDay(2) : failAttempt();
-    }
+            function calendarHintFor(panelId) {
+                if (panelId === 'day-1') return 'Día 1 · Tom Nook';
+                if (panelId === 'day-2') return 'Día 2 · Canela';
+                if (panelId === 'day-3') return 'Día 3 · Estela';
+                return 'Hoy no hay capítulo nuevo';
+            }
 
-    function launchDay3() {
-        minigameBox.style.display = "block";
-        document.getElementById('game-title').innerText = "CUENTAS NOOK";
-        document.getElementById('game-content').innerHTML = `
-            <div style="font-size:0.8rem; text-align:left; border:1px solid #ccc; padding:10px;">
-                2x Pepitas Oro <br>1x Mariposa Tigre <br>3x Manzanas
-            </div><input type="number" id="nook-input" placeholder="Total...">`;
-        document.getElementById('game-controls').innerHTML = `<button class="option-btn" style="width:100%" onclick="checkN()">Cerrar Caja</button>`;
-    }
+            const STORAGE_DAY1_DONE = 'ac_day1_complete';
 
-    function checkN() {
-        parseInt(document.getElementById('nook-input').value) === 20540 ? winDay(3) : failAttempt();
-    }
-
-    /* --- MINIJUEGO DÍA 4: MAPA ESTELAR --- */
-    function launchDay4() {
-        document.getElementById('main-body').classList.add('night-sky');
-        minigameBox.style.display = "block";
-        document.getElementById('game-title').innerText = "EL MAPA ESTELAR";
-        document.getElementById('game-content').innerHTML = `
-            <p style="font-size:0.8rem;">Busca la constelación de <b>Cáncer</b></p>
-            <div class="constellation-grid">
-                <div class="constellation-card" onclick="checkConstellation('Oso')">
-                    <img src="escorpio.png" alt="Oso">
-                </div>
-                <div class="constellation-card" onclick="checkConstellation('Pez')">
-                    <img src="piscis.png" alt="Pez">
-                </div>
-                <div class="constellation-card" onclick="checkConstellation('Cancer')">
-                    <img src="cancer.png" alt="Cáncer">
-                </div>
-                <div class="constellation-card" onclick="checkConstellation('Leon')">
-                    <img src="leo.png" alt="León">
-                </div>
-            </div>`;
-        document.getElementById('game-controls').innerHTML = "";
-    }
-
-    function checkConstellation(name) {
-        if(name === 'Cancer') winDay(4);
-        else failAttempt();
-    }
-
-    function failAttempt() {
-        vidas--; updateStats();
-        if (vidas <= 0) { localStorage.setItem('last_fail', Date.now().toString()); checkCooldown(); }
-        else alert("¡Incorrecto! ❤️ Te queda " + vidas + " intento.");
-    }
-
-    function winDay(n) {
-        document.getElementById('main-body').classList.remove('night-sky');
-        minigameBox.style.display = "none";
-        localStorage.setItem(`dia${n}_done`, 'true');
-        typeWriter("¡LO HAS LOGRADO! Has recuperado una parte de tu regalo. ¡Mañana más!");
-    }
-
-    let flippedCards = [];
-    let matchedPairs = 0;
-
-    function launchDay5() {
-        minigameBox.style.display = "block";
-        document.getElementById('game-title').innerText = "MEMORIA DE MARINERO";
-        flippedCards = [];
-        matchedPairs = 0;
-        
-        // Objetos a emparejar (emojis para que sea fácil)
-        const items = ['⚓', '⚓', '🧭', '🧭', '🗺️', '🗺️'];
-        // Mezclar aleatoriamente
-        items.sort(() => Math.random() - 0.5);
-
-        let html = `<p style="font-size:0.7rem; margin-bottom:10px;">Encuentra las 3 parejas de objetos</p>
-                    <div id="memory-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; padding:10px;">`;
-        
-        items.forEach((item, index) => {
-            html += `
-                <div class="memory-card" onclick="flipMemoryCard(this, '${item}')" 
-                     style="width:80px; height:80px; background:var(--ac-green); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer; color:transparent; border:3px solid white; transition:0.3s;">
-                     ${item}
-                </div>`;
-        });
-        
-        html += `</div>`;
-        document.getElementById('game-content').innerHTML = html;
-        document.getElementById('game-controls').innerHTML = "";
-    }
-
-    function flipMemoryCard(card, item) {
-        // Evitar clicar la misma carta o cuando ya hay dos giradas
-        if (flippedCards.length < 2 && card.style.color !== 'black') {
-            card.style.color = 'black';
-            card.style.background = 'white';
-            flippedCards.push({card, item});
-
-            if (flippedCards.length === 2) {
-                if (flippedCards[0].item === flippedCards[1].item) {
-                    // ¡Pareja encontrada!
-                    matchedPairs++;
-                    flippedCards = [];
-                    if (matchedPairs === 3) {
-                        setTimeout(() => winDay(5), 600);
-                    }
-                } else {
-                    // No coinciden, volver a girar
-                    setTimeout(() => {
-                        flippedCards[0].card.style.color = 'transparent';
-                        flippedCards[0].card.style.background = 'var(--ac-green)';
-                        flippedCards[1].card.style.color = 'transparent';
-                        flippedCards[1].card.style.background = 'var(--ac-green)';
-                        flippedCards = [];
-                    }, 700);
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
                 }
-            }
-        }
-    }
-
-   function buyHelp(tipo) {
-        if (bayas >= 500) {
-            let msg = "";
-            const titulo = document.getElementById('game-title').innerText;
-
-            if (titulo.includes("CANELA")) {
-                msg = "CANELA: Recuerdo que ese pez es un 'fósil viviente'. ¡Solo aparece en los días más lluviosos!";
-            } else if (titulo.includes("SÓCRATES")) {
-                msg = "SÓCRATES: Es una obra maestra de Johannes Vermeer, famoso por su manejo de la luz.";
-            } else if (titulo.includes("CUENTAS NOOK")) {
-                msg = "TENDO: Recuerda que las pepitas de oro valen diez mil bayas... ¡diez mil!";
-            } else if (titulo.includes("MAPA")) {
-                msg = "ESTELA: La constelación de Cáncer tiene forma de cangrejo, con dos pinzas grandes arriba.";
+                return arr;
             }
 
-            if (tipo === 'skip') {
-                if (bayas >= 2500) { 
-                    bayas -= 2500; updateStats();
-                    const n = titulo.includes("CANELA") ? 1 : (titulo.includes("SÓCRATES") ? 2 : (titulo.includes("CUENTAS") ? 3 : 4));
-                    winDay(n);
+            const Day1Minigame = (function () {
+                const TRASH_ICONS = ['🥾', '🛞', '👢'];
+                const TUTORIAL_HTML = [
+                    '¡Hola, hola! Qué alegría verte por la zona de obras. Como te comenté, tengo un pequeño problemilla con los materiales del <strong>Regalo Especial</strong>, sí, sí.',
+                    'He marcado <strong>16 hoyos</strong> en la tierra. Durante un par de segundos, te mostraré qué hay debajo. ¡Presta mucha atención y usa tu memoria!',
+                    'Necesito que encuentres <strong>3 pepitas de hierro</strong> y <strong>3 maderas</strong>. Pero ten cuidado... ¡si tocas <strong>basura</strong>, el suelo vibrará y los materiales cambiarán de sitio!',
+                    'Tienes <strong>40 segundos</strong> antes de que pase el camión. ¡Ah! Y solo tienes <strong>3 herramientas (vidas)</strong>; si se rompen, habrá que empezar de cero. ¡A por ellos, sí, sí!',
+                ];
+
+                let tutorialStep = 0;
+                let tutorialBound = false;
+                let board = [];
+                let timerId = null;
+                let memoryTimer = null;
+                let playActive = false;
+                let ironFound = 0;
+                let woodFound = 0;
+
+                function $(id) {
+                    return document.getElementById(id);
+                }
+
+                function iconForType(type, salt) {
+                    if (type === 'iron') return '🔩';
+                    if (type === 'wood') return '🪵';
+                    return TRASH_ICONS[(salt + type.length) % TRASH_ICONS.length];
+                }
+
+                function updateHud() {
+                    const iEl = $('day1-count-iron');
+                    const wEl = $('day1-count-wood');
+                    if (iEl) iEl.textContent = String(Math.min(ironFound, 3));
+                    if (wEl) wEl.textContent = String(Math.min(woodFound, 3));
+                }
+
+                function showTutorialLine() {
+                    const el = $('day1-tutorial-text');
+                    if (el) el.innerHTML = TUTORIAL_HTML[tutorialStep];
+                }
+
+                function bindTutorialIfNeeded() {
+                    const dlg = $('day1-tutorial-dialog');
+                    if (!dlg || tutorialBound) return;
+                    tutorialBound = true;
+                    dlg.addEventListener('click', onTutorialClick);
+                    dlg.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onTutorialClick();
+                        }
+                    });
+                }
+
+                function onTutorialClick() {
+                    if (tutorialStep < TUTORIAL_HTML.length - 1) {
+                        tutorialStep++;
+                        showTutorialLine();
+                        return;
+                    }
+                    const tom = $('day1-tutorial-tom');
+                    if (tom) {
+                        tom.classList.remove('character--float');
+                        tom.classList.add('character--joy');
+                    }
+                    setTimeout(() => {
+                        if (tom) {
+                            tom.classList.remove('character--joy');
+                            tom.classList.add('character--float');
+                        }
+                        fadeToGame();
+                    }, 880);
+                }
+
+                function fadeToGame() {
+                    const tut = $('day1-tutorial-layer');
+                    const game = $('day1-game-layer');
+                    if (!tut || !game) return;
+                    tut.style.opacity = '0';
+                    setTimeout(() => {
+                        tut.setAttribute('hidden', '');
+                        game.hidden = false;
+                        game.style.opacity = '0';
+                        requestAnimationFrame(() => {
+                            game.style.transition = 'opacity 0.45s ease';
+                            game.style.opacity = '1';
+                        });
+                        vidas = 3;
+                        renderStats();
+                        startRound();
+                    }, 440);
+                }
+
+                function buildBoardTypes() {
+                    const types = [];
+                    for (let i = 0; i < 4; i++) types.push('iron');
+                    for (let i = 0; i < 4; i++) types.push('wood');
+                    for (let i = 0; i < 8; i++) types.push('trash');
+                    return shuffleArray(types);
+                }
+
+                function startRound() {
+                    if (timerId) {
+                        clearInterval(timerId);
+                        timerId = null;
+                    }
+                    if (memoryTimer) clearTimeout(memoryTimer);
+                    ironFound = 0;
+                    woodFound = 0;
+                    updateHud();
+                    $('day1-timer').textContent = '40';
+                    const tip = $('day1-memory-tip');
+                    const grid = $('day1-hole-grid');
+                    if (!grid) return;
+                    grid.innerHTML = '';
+                    playActive = false;
+
+                    const types = buildBoardTypes();
+                    board = types.map((type, idx) => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'day1-hole';
+                        btn.setAttribute('aria-label', 'Hoyo ' + (idx + 1));
+                        const icon = document.createElement('span');
+                        icon.className = 'day1-hole__icon';
+                        icon.textContent = iconForType(type, idx);
+                        btn.appendChild(icon);
+                        btn.addEventListener('click', () => onCellClick(idx));
+                        grid.appendChild(btn);
+                        return { type, el: btn, revealed: false };
+                    });
+
+                    board.forEach((c) => c.el.classList.remove('is-covered'));
+                    if (tip) {
+                        tip.textContent = 'Memoriza lo que hay debajo…';
+                    }
+
+                    memoryTimer = setTimeout(() => {
+                        board.forEach((c) => c.el.classList.add('is-covered'));
+                        if (tip) tip.textContent = '¡A cavar! Tienes 40 s.';
+                        startTimer();
+                    }, 2500);
+                }
+
+                function startTimer() {
+                    playActive = true;
+                    let t = 40;
+                    $('day1-timer').textContent = String(t);
+                    timerId = setInterval(() => {
+                        t--;
+                        $('day1-timer').textContent = String(Math.max(0, t));
+                        if (t <= 0) {
+                            clearInterval(timerId);
+                            timerId = null;
+                            playActive = false;
+                            vidas = 3;
+                            renderStats();
+                            startRound();
+                        }
+                    }, 1000);
+                }
+
+                function shuffleHiddenCells() {
+                    const hidden = board.filter((c) => !c.revealed);
+                    if (hidden.length < 2) return;
+                    const types = shuffleArray(hidden.map((c) => c.type));
+                    hidden.forEach((c, i) => {
+                        c.type = types[i];
+                        const icon = c.el.querySelector('.day1-hole__icon');
+                        if (icon) icon.textContent = iconForType(c.type, board.indexOf(c));
+                    });
+                }
+
+                function checkWin() {
+                    if (ironFound >= 3 && woodFound >= 3) {
+                        playActive = false;
+
+                        // Limpiamos los cronómetros
+                        if (memoryTimer) { clearTimeout(memoryTimer); memoryTimer = null; }
+                        if (timerId) { clearInterval(timerId); timerId = null; }
+
+                        // Guardamos progreso y pagamos las bayas
+                        localStorage.setItem(STORAGE_DAY1_DONE, '1');
+                        bayas += 500;
+                        renderStats();
+
+                        // En lugar de cambiar de fase directamente, lanzamos el diálogo de victoria
+                        // Volvemos a la fase de historia momentáneamente para que se vea a Tom Nook
+                        goToPhase('day-1', 'historia');
+                        DialogRuntime.start('day-1-victoria', 'day-1');
+
+                        // Actualizamos el banner de resultado de fondo por si el usuario vuelve a entrar
+                        const res = $('day1-result');
+                        if (res) {
+                            res.innerHTML = '<p>¡Día 1 completado! Vuelve mañana para ayudar a Canela.</p>';
+                        }
+                    }
+                }
+
+                function onCellClick(index) {
+                    if (!playActive) return;
+                    const cell = board[index];
+                    if (!cell || cell.revealed) return;
+                    cell.revealed = true;
+                    cell.el.classList.remove('is-covered');
+
+                    if (cell.type === 'iron') {
+                        if (ironFound < 3) ironFound++;
+                        updateHud();
+                        checkWin();
+                    } else if (cell.type === 'wood') {
+                        if (woodFound < 3) woodFound++;
+                        updateHud();
+                        checkWin();
+                    } else {
+                        vidas = Math.max(0, vidas - 1);
+                        renderStats();
+                        document.body.classList.add('day1-screen-shake');
+                        setTimeout(() => document.body.classList.remove('day1-screen-shake'), 480);
+                        cell.el.classList.add('is-mismatch');
+                        setTimeout(() => cell.el.classList.remove('is-mismatch'), 400);
+                        shuffleHiddenCells();
+                        if (vidas <= 0) {
+                            playActive = false;
+                            if (timerId) {
+                                clearInterval(timerId);
+                                timerId = null;
+                            }
+                            vidas = 3;
+                            renderStats();
+                            setTimeout(() => startRound(), 600);
+                        }
+                    }
+                }
+
+                // Busca la función enter() dentro de Day1Minigame y cámbiala por esta:
+                function enter() {
+                    bindTutorialIfNeeded();
+                    if (localStorage.getItem(STORAGE_DAY1_DONE) === '1') {
+                        const res = $('day1-result');
+                        if (res) res.innerHTML = '<p>¡Ya completaste la zona de obras del día 1!</p>';
+                        goToPhase('day-1', 'resultado');
+                        return;
+                    }
+                    const tut = $('day1-tutorial-layer');
+                    const game = $('day1-game-layer');
+                    if (!tut || !game) return;
+                    tut.removeAttribute('hidden');
+                    tut.style.opacity = '1';
+                    tut.style.transition = 'opacity 0.45s ease';
+                    game.hidden = true;
+                    game.style.opacity = '1';
+                    tutorialStep = 0;
+                    showTutorialLine();
+                }
+
+                return { enter };
+            })();
+
+            const DIALOG_SEQUENCES = {
+                'waiting': {
+                    character: 'Tom Nook',
+                    steps: [
+                        { text: 'Paciencia, sí, sí. Vuelve cuando la isla esté lista para tu día especial.' },
+                    ],
+                    onComplete: null,
+                },
+                'day-1': {
+                    character: 'Tom Nook',
+                    steps: [
+                        { text: '¡Hola, hola! Antes de tu misión de hoy, te cuento cómo va esto, sí, sí.' },
+                        { text: 'Esta experiencia son tres días en la isla. Cada capítulo solo se abre cuando toca en el calendario… ¡no puedes saltar a otro día a mano!' },
+                        { text: 'Cada día es una misión con tres partes: primero la historia (como esta charla), luego un reto y al final el resultado. Así de ordenado.' },
+                        { text: 'Arriba verás tus bayas y tres corazones. Los corazones son tus oportunidades: si fallas un reto, pierdes una. ¡Úsalos con cabeza!' },
+                        {
+                            ask: {
+                                lead: 'Si algo no te cuadra, pregúntame. ¿Qué quieres saber?',
+                                choices: [
+                                    { q: '¿Para qué sirven las bayas?', a: ['Las bayas son como tu cartera en la isla.', 'En la tienda puedes comprar pistas o atajos a cambio de bayas, sí, sí.'] },
+                                    { q: '¿Y los corazones?', a: ['Cada corazón es un intento de más.', 'Cuando se acaben, las cosas se complican… así que piensa antes de actuar.'] },
+                                    { q: '¿Dónde está la tienda?', a: ['Justo debajo de los contadores tienes el botón «Tienda Nook».', 'Tendo y Nendo te atienden dentro. Cierras la ventana y sigues donde estabas.'] },
+                                    { q: '¡Todo claro, sigamos!', done: true },
+                                ],
+                            },
+                        },
+                        { transition: 'day-1' },
+                        { text: 'Y bien… aquí empieza de verdad tu capítulo en la obra, sí, sí. Toca cuando quieras para oír el encargo del reto.' },
+                        { text: '¡Hola, hola! Qué alegría verte por aquí, sí, sí. Escucha... tengo un encargo de un regalo MUY especial para un vecino que pronto será su cumpleaños, pero las piezas del kit de montaje se me han caído en la zona de obras de la isla.' },
+                        { text: '¡Qué desastre! Los materiales están enterrados y el camión de reparto llega en un minuto. ¿Podrías ayudarme a recuperarlos antes de que sea tarde?' },
+                        { text: '¡Te daré una buena cantidad de bayas por las molestias, sí, sí!' },
+                    ],
+                    onComplete: () => {
+                        goToPhase('day-1', 'reto');
+                        Day1Minigame.enter();
+                    },
+                },
+                'day-1-victoria': {
+                    character: 'Tom Nook',
+                    steps: [
+                        { text: '¡Increíble, sí, sí! Has encontrado todos los materiales justo a tiempo.' },
+                        { text: 'Aquí tienes tus 500 bayas, tal y como acordamos. ¡Te las has ganado!' },
+                        { text: 'Vuelve mañana, Canela me ha dicho que necesita ayuda con algo de la oficina municipal...' },
+                        { text: '¡Hasta mañana!' }
+                    ],
+                    onComplete: () => {
+                        goToPhase('day-1', 'resultado');
+                    }
+                },
+                'day-2': {
+                    character: 'Canela',
+                    steps: [
+                        { text: '¡Buenos días! Hoy toca poner la isla en orden, sí, sí.' },
+                        { text: 'Han crecido hierbajos mezclados con las flores. ¡Necesito que sepas distinguirlos antes del reto!' },
+                        {
+                            ask: {
+                                lead: '¿Quieres que repasemos algo?',
+                                choices: [
+                                    { q: '¿Por qué importa limpiar?', a: ['Una isla limpia es una isla feliz.', 'Además, el reto de hoy va de clasificar plantas…'] },
+                                    { q: '¡No, empecemos!', done: true },
+                                ],
+                            },
+                        },
+                        { text: 'Cuando terminemos de hablar, te tocará el reto. ¡Tú puedes!' },
+                    ],
+                    onComplete: () => goToPhase('day-2', 'reto'),
+                },
+                'day-3': {
+                    character: 'Estela',
+                    steps: [
+                        { text: '¡Mira qué cielo…! Noche perfecta para las constelaciones, sí, sí.' },
+                        { text: 'Cada estrella es una pista. En el reto tendrás que reconocer la figura correcta entre varias.' },
+                        {
+                            ask: {
+                                lead: '¿Alguna pregunta antes de lanzarte?',
+                                choices: [
+                                    { q: '¿Y si me equivoco?', a: ['Cada corazón es una oportunidad.', 'Piensa con calma: las estrellas no tienen prisa.'] },
+                                    { q: '¡Vamos allá!', done: true },
+                                ],
+                            },
+                        },
+                        { text: 'Disfruta del cielo. Cuando acabemos aquí, el reto te espera.' },
+                    ],
+                    onComplete: () => goToPhase('day-3', 'reto'),
+                },
+            };
+
+            const DAY_TRANSITION_UI = {
+                'day-1': {
+                    bodyClass: 'ac-theme-day1',
+                    eyebrow: 'Capítulo',
+                    title: 'Día 1',
+                    subtitle: 'Zona de obras',
+                    calendarHint: 'Día 1 · Zona de obras',
+                },
+            };
+
+            function runDayTransition(id, onDone) {
+                const cfg = DAY_TRANSITION_UI[id];
+                if (!cfg) {
+                    onDone();
                     return;
-                } else { alert("No tienes suficientes bayas."); return; }
+                }
+                const root = document.getElementById('main-body');
+                const wrap = document.getElementById('day-transition');
+                const card = wrap.querySelector('.day-transition__card');
+                wrap.querySelector('.day-transition__eyebrow').textContent = cfg.eyebrow;
+                wrap.querySelector('.day-transition__title').textContent = cfg.title;
+                wrap.querySelector('.day-transition__subtitle').textContent = cfg.subtitle;
+
+                let fallbackTimer = null;
+                let transitionFinished = false;
+
+                function onAnimEnd(e) {
+                    if (e.target !== card) return;
+                    finish();
+                }
+
+                function finish() {
+                    if (transitionFinished) return;
+                    transitionFinished = true;
+                    card.removeEventListener('animationend', onAnimEnd);
+                    if (fallbackTimer !== null) clearTimeout(fallbackTimer);
+                    wrap.classList.remove('is-active');
+                    wrap.hidden = true;
+                    if (cfg.calendarHint) document.getElementById('calendar-hint').textContent = cfg.calendarHint;
+                    onDone();
+                }
+
+                if (cfg.bodyClass) root.classList.add(cfg.bodyClass);
+
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    setTimeout(finish, 120);
+                    return;
+                }
+
+                wrap.hidden = false;
+                void wrap.offsetWidth;
+                wrap.classList.add('is-active');
+                fallbackTimer = setTimeout(finish, 1600);
+                card.addEventListener('animationend', onAnimEnd);
             }
-            
-            if (msg !== "") {
-                bayas -= 500; updateStats();
-                alert("PISTA: " + msg);
+
+            /* Pitidos de diálogo estilo AC (Web Audio API, sin archivos). */
+            function playDialogBlip(speakerName) {
+                try {
+                    const AC = window.AudioContext || window.webkitAudioContext;
+                    if (!AC) return;
+
+                    if (!playDialogBlip._ctx) playDialogBlip._ctx = new AC();
+
+                    const ctx = playDialogBlip._ctx;
+                    if (ctx.state === 'suspended') ctx.resume();
+
+                    let h = 5381;
+                    const s = String(speakerName || 'vecino');
+                    for (let k = 0; k < s.length; k++) h = ((h << 5) + h) ^ s.charCodeAt(k);
+                    const baseHz = 340 + (Math.abs(h) % 220);
+                    const jitter = (Math.random() - 0.5) * 35;
+
+                    const t = ctx.currentTime;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(baseHz + jitter, t);
+                    gain.gain.setValueAtTime(0.0001, t);
+                    gain.gain.linearRampToValueAtTime(0.05, t + 0.004);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.052);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.055);
+                } catch (_) { /* sin audio en este entorno */ }
             }
 
-            if (titulo.includes("MEMORIA")) {
-                msg = "GULLIVER: ¡Zzz... concéntrate! Si fallas, fíjate bien dónde estaba cada dibujo antes de que se den la vuelta.";
+            function unlockDialogAudio() {
+                try {
+                    if (playDialogBlip._ctx && playDialogBlip._ctx.state === 'suspended') {
+                        playDialogBlip._ctx.resume();
+                    }
+                } catch (_) { }
             }
-        } else { alert("¡Sin bayas!"); }
-    }
+            document.body.addEventListener('pointerdown', unlockDialogAudio, { passive: true });
+            document.body.addEventListener('keydown', unlockDialogAudio);
 
-    function checkCooldown() {
-        const last = localStorage.getItem('last_fail');
-        if (last) {
-            const diff = Date.now() - parseInt(last);
-            if (diff < COOLDOWN_MS) {
-                document.getElementById('cooldown-screen').style.display = 'flex';
-                updateTimer(); return true;
-            } else localStorage.removeItem('last_fail');
-        }
-        return false;
-    }
+            const DialogRuntime = (function () {
+                let panelId = null;
+                let stepIndex = 0;
+                let steps = [];
+                let defaultCharacter = '';
+                let onSequenceComplete = null;
+                let typingTimer = null;
+                let skipTyping = null;
+                let isAwaitingTap = false;
+                let dialogEl = null;
+                let textEl = null;
+                let nameEl = null;
+                let optionsEl = null;
+                let continueEl = null;
+                let askState = null;
 
-    function updateTimer() {
-        const timer = document.getElementById('timer-display');
-        const interval = setInterval(() => {
-            const lastFail = localStorage.getItem('last_fail');
-            if(!lastFail) return;
-            const ms = COOLDOWN_MS - (Date.now() - parseInt(lastFail));
-            if (ms <= 0) { clearInterval(interval); location.reload(); }
-            let m = Math.floor(ms/60000), s = Math.floor((ms%60000)/1000);
-            timer.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-        }, 1000);
-    }
+                function reducedMotion() {
+                    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                }
 
-    window.onload = () => { updateStats(); if(!checkCooldown()) nextMessage(); };
-</script>
+                function clearTyping() {
+                    if (typingTimer) clearTimeout(typingTimer);
+                    typingTimer = null;
+                }
+
+                function bindDom(pid) {
+                    const ids = PANEL_TEXT_IDS[pid];
+                    if (!ids) return false;
+                    dialogEl = document.querySelector(`[data-ac-dialog="${pid}"]`);
+                    textEl = document.getElementById(ids.text);
+                    nameEl = document.getElementById(ids.name);
+                    optionsEl = document.getElementById(ids.options);
+                    continueEl = dialogEl ? dialogEl.querySelector('.dialog__continue') : null;
+                    return !!(dialogEl && textEl && nameEl && optionsEl && continueEl);
+                }
+
+                function setTyping(t) {
+                    dialogEl.classList.toggle('is-typing', t);
+                }
+
+                function setAwaitingChoice(on) {
+                    dialogEl.classList.toggle('is-awaiting-choice', on);
+                }
+
+                function hideContinue(on) {
+                    continueEl.hidden = on;
+                }
+
+                function typeText(fullText, done) {
+                    clearTyping();
+                    skipTyping = null;
+                    if (!textEl) return done();
+
+                    textEl.innerHTML = '';
+                    hideContinue(true);
+                    setTyping(true);
+
+                    if (reducedMotion() || !fullText.length) {
+                        textEl.textContent = fullText;
+                        setTyping(false);
+                        hideContinue(false);
+                        done();
+                        return;
+                    }
+
+                    let i = 0;
+                    function finishAll() {
+                        clearTyping();
+                        skipTyping = null;
+                        textEl.textContent = fullText;
+                        setTyping(false);
+                        hideContinue(false);
+                        done();
+                    }
+                    skipTyping = finishAll;
+
+                    function tick() {
+                        if (i >= fullText.length) {
+                            clearTyping();
+                            skipTyping = null;
+                            setTyping(false);
+                            hideContinue(false);
+                            done();
+                            return;
+                        }
+                        const ch = fullText[i];
+                        let delay = 28;
+                        /* Espacio y salto: fuera de .dialog__glyph (inline-block + solo espacio colapsa y junta palabras). */
+                        if (ch === '\n') {
+                            textEl.appendChild(document.createElement('br'));
+                            i++;
+                            delay = 40;
+                        } else if (ch === ' ') {
+                            textEl.appendChild(document.createTextNode(' '));
+                            i++;
+                            delay = 14;
+                        } else {
+                            const span = document.createElement('span');
+                            span.className = 'dialog__glyph';
+                            span.textContent = ch;
+                            textEl.appendChild(span);
+                            playDialogBlip(nameEl ? nameEl.textContent : '');
+                            i++;
+                            if (/[.!?…]/.test(ch)) delay += 150;
+                            else if (/[,;:]/.test(ch)) delay += 80;
+                        }
+                        typingTimer = setTimeout(tick, delay);
+                    }
+                    tick();
+                }
+
+                function clearOptions() {
+                    optionsEl.innerHTML = '';
+                    optionsEl.classList.remove('is-open');
+                    setAwaitingChoice(false);
+                }
+
+
+                function showAskMenu(ask) {
+                    clearOptions();
+                    optionsEl.classList.add('is-open');
+                    setAwaitingChoice(true);
+                    hideContinue(true);
+                    isAwaitingTap = false;
+                    ask.choices.forEach((choice) => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'dialog-option';
+                        btn.textContent = choice.q;
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            pickAskChoice(choice);
+                        });
+                        optionsEl.appendChild(btn);
+                    });
+                }
+
+                function pickAskChoice(choice) {
+                    if (choice.done) {
+                        clearOptions();
+                        askState = null;
+                        stepIndex++;
+                        runStep();
+                        return;
+                    }
+                    const lines = choice.a || [];
+                    if (!lines.length) return;
+                    clearOptions();
+                    setAwaitingChoice(false);
+                    let idx = 0;
+                    askState.playingAnswers = true;
+                    function typeCurrent() {
+                        if (idx >= lines.length) {
+                            askState.playingAnswers = false;
+                            askState.answerAdvance = null;
+                            isAwaitingTap = false;
+                            showAskMenu(askState.def);
+                            return;
+                        }
+                        typeText(lines[idx], () => {
+                            isAwaitingTap = true;
+                            askState.answerAdvance = () => {
+                                isAwaitingTap = false;
+                                askState.answerAdvance = null;
+                                idx++;
+                                typeCurrent();
+                            };
+                        });
+                    }
+                    typeCurrent();
+                }
+
+                function runStep() {
+                    clearOptions();
+                    askState = null;
+                    if (stepIndex >= steps.length) {
+                        if (onSequenceComplete) onSequenceComplete();
+                        return;
+                    }
+                    const step = steps[stepIndex];
+                    nameEl.textContent = step.name || defaultCharacter;
+
+                    if (step.transition) {
+                        hideContinue(true);
+                        if (textEl) textEl.textContent = '';
+                        setTyping(false);
+                        isAwaitingTap = false;
+                        runDayTransition(step.transition, () => {
+                            stepIndex++;
+                            runStep();
+                        });
+                        return;
+                    }
+
+                    if (step.ask) {
+                        askState = { def: step.ask };
+                        typeText(step.ask.lead, () => {
+                            isAwaitingTap = true;
+                            askState.pendingMenu = true;
+                        });
+                        return;
+                    }
+                    if (step.text) {
+                        typeText(step.text, () => {
+                            isAwaitingTap = true;
+                        });
+                    }
+                }
+
+                function onDialogPointerUp(ev) {
+                    if (ev.target.closest('.dialog-options')) return;
+                    if (dialogEl.classList.contains('is-awaiting-choice')) return;
+
+                    if (skipTyping) {
+                        skipTyping();
+                        return;
+                    }
+                    if (!isAwaitingTap) return;
+
+                    if (askState && askState.pendingMenu) {
+                        askState.pendingMenu = false;
+                        showAskMenu(askState.def);
+                        return;
+                    }
+                    if (askState && askState.playingAnswers && askState.answerAdvance) {
+                        askState.answerAdvance();
+                        return;
+                    }
+
+                    isAwaitingTap = false;
+                    stepIndex++;
+                    runStep();
+                }
+
+                let boundDialog = null;
+                function bindDialogTap() {
+                    if (boundDialog) {
+                        boundDialog.removeEventListener('click', onDialogPointerUp);
+                        boundDialog.removeEventListener('keydown', onDialogKey);
+                    }
+                    boundDialog = dialogEl;
+                    if (!dialogEl) return;
+                    dialogEl.addEventListener('click', onDialogPointerUp);
+                    dialogEl.addEventListener('keydown', onDialogKey);
+                }
+
+                function onDialogKey(e) {
+                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                    e.preventDefault();
+                    onDialogPointerUp(e);
+                }
+
+                // Reemplaza la función start dentro de DialogRuntime por esta:
+                function start(pid, targetUiId = null) {
+                    clearTyping();
+                    skipTyping = null;
+                    stepIndex = 0;
+                    askState = null;
+                    isAwaitingTap = false;
+                    panelId = pid;
+
+                    // Si no le pasamos un targetUiId, usará el pid como ID de la interfaz (comportamiento normal)
+                    const uiId = targetUiId || pid;
+
+                    const cfg = DIALOG_SEQUENCES[pid];
+                    if (!cfg || !bindDom(uiId)) return; // <-- Aquí está el truco: bindDom usa el UI correcto
+
+                    steps = cfg.steps;
+                    defaultCharacter = cfg.character || '';
+                    onSequenceComplete = cfg.onComplete || null;
+                    if (nameEl && defaultCharacter) nameEl.textContent = defaultCharacter;
+
+                    clearOptions();
+                    hideContinue(true);
+                    bindDialogTap();
+                    runStep();
+                }
+
+                return { start };
+            })();
+
+            function applyPanelForToday() {
+                const panelId = getPanelIdForCalendarDate(new Date());
+                panels.forEach(p => p.classList.toggle('is-active', p.id === panelId));
+                const body = document.getElementById('main-body');
+                body.classList.toggle('night-sky', panelId === 'day-3');
+                if (panelId !== 'day-1') body.classList.remove('ac-theme-day1');
+                const showShopBtn = panelId === 'day-1' || panelId === 'day-2' || panelId === 'day-3';
+                btnOpenShop.toggleAttribute('hidden', !showShopBtn);
+                calendarHint.textContent = calendarHintFor(panelId);
+                DialogRuntime.start(panelId);
+            }
+
+            function openShopModal() {
+                shopModal.removeAttribute('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeShopModal() {
+                shopModal.setAttribute('hidden', '');
+                document.body.style.overflow = '';
+            }
+
+            btnOpenShop.addEventListener('click', openShopModal);
+            shopModal.querySelectorAll('[data-close-shop]').forEach(el => {
+                el.addEventListener('click', closeShopModal);
+            });
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && !shopModal.hasAttribute('hidden')) {
+                    closeShopModal();
+                }
+            });
+
+            renderStats();
+            applyPanelForToday();
+
+            /* Placeholder: compras tienda (solo descuenta bayas si hay saldo) */
+            shopModal.querySelectorAll('[data-shop]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Detectamos en qué día estamos actualmente
+                    const panelActual = getPanelIdForCalendarDate(new Date());
+
+                    // Si es el día 1, bloqueamos la compra con el mensaje que querías
+                    if (panelActual === 'day-1') {
+                        alert("Tendo: ¡...ayuda! Es el primer día, todavía no tienes disponible esta opción, sí, sí.\n\nNendo: ...sí, sí! ¡Inténtalo sin ayuda!");
+                        return; // Salimos de la función para que no cobre bayas
+                    }
+
+                    // Lógica normal para el resto de días (Día 2 y 3)
+                    const kind = btn.getAttribute('data-shop');
+                    const cost = kind === 'skip' ? 2500 : 500;
+
+                    if (bayas < cost) {
+                        alert('Tendo: ¡...bayas! No tienes suficientes bayas para esto...\n\nNendo: ...sí, sí, faltan bayas!');
+                        return;
+                    }
+
+                    // Si no es el día 1 y tiene dinero, se procesa la compra
+                    bayas -= cost;
+                    renderStats();
+                    alert("Tendo: ¡Gracias por tu compra!\n\nNendo: ...¡compra!");
+
+                    // Aquí podrías añadir la lógica de lo que hace cada ítem en el futuro
+                    console.log("Comprado: " + kind);
+                });
+            });
+
+            window.__acIsland = {
+                getBayas: () => bayas,
+                getVidas: () => vidas,
+                setBayas: n => { bayas = n; renderStats(); },
+                setVidas: n => { vidas = Math.min(3, Math.max(0, n)); renderStats(); },
+                getPanelIdForCalendarDate,
+                refreshDayFromCalendar: applyPanelForToday,
+                DIALOG_SEQUENCES,
+                restartDialog: () => DialogRuntime.start(getPanelIdForCalendarDate(new Date())),
+                Day1Minigame,
+                STORAGE_DAY1_DONE,
+            };
+        })();
+    </script>
 </body>
+
 </html>
